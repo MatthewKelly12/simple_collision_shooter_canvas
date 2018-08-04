@@ -27,6 +27,8 @@ addEventListener('mousemove', event => {
 	mouse.y = event.y
 })
 
+let score = 0;
+
 // Shooter, blue cirlce with x and y coordinates of mouse
 shooter = () => {
 	c.beginPath()
@@ -65,6 +67,8 @@ let targets = []
 targets.push(greenTarget)
 targets.push(blueTarget)
 
+
+
 // Bullets
 function Bullet(x, y) {
 	this.x = x
@@ -87,6 +91,7 @@ function Bullet(x, y) {
 			greenTarget.y + greenTarget.radius,) < 30) {
 
 				greenTarget.color = "yellow"
+				score += 1
 
 				console.log("hit")
 		}
@@ -96,6 +101,7 @@ function Bullet(x, y) {
 			blueTarget.y + blueTarget.radius,) < 30) {
 
 				blueTarget.color = "yellow"
+				score += 1
 
 				console.log("hit")
 		}
@@ -110,6 +116,8 @@ addEventListener('click', event => {
 	const bullet = new Bullet(mouse.x, mouse.y)
 	bullets.push(bullet)
 })
+
+
 
 // Creates animation
 animate = () => {
@@ -128,6 +136,18 @@ animate = () => {
 	for (let i = 0; i < targets.length; i++) {
 		targets[i].update()
 	}
+
+	c.beginPath()
+	c.font = "60pt Comic Sans MS"
+	c.fillStyle = "green"
+	c.fillText('Score:', 500, 500, 300)
+	c.fill()
+
+	c.beginPath()
+	c.font = "60pt Comic Sans MS"
+	c.fillStyle = "green"
+	c.fillText(score, 750, 500, 300)
+	c.fill()
 
 
 
