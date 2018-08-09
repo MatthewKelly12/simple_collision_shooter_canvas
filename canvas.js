@@ -12,6 +12,15 @@ const mouse = {
 	y: undefined
 }
 
+// Variable to show score on screen
+let score = 0;
+
+// Array to hold bullets
+let bullets = []
+
+// Array to hold targets
+let targets = []
+
 // Calculates and returns the distance bewteen two points
 function distance(x1, y1, x2, y2) {
     const xDist = x2 - x1
@@ -27,9 +36,27 @@ addEventListener('mousemove', event => {
 	mouse.y = event.y
 })
 
-let score = 0;
 
-// Shooter, blue cirlce with x and y coordinates of mouse
+
+// Draws 'Score:' text
+scoreText = () => {
+	c.beginPath()
+	c.font = "60pt Comic Sans MS"
+	c.fillStyle = "green"
+	c.fillText('Score:', 500, 600, 300)
+	c.fill()
+}
+
+// Draws actual score number, starts at 0
+scoreNumber = () => {
+	c.beginPath()
+	c.font = "60pt Comic Sans MS"
+	c.fillStyle = "green"
+	c.fillText(score, 750, 600, 300)
+	c.fill()
+}
+
+// Draws shooter, blue cirlce with x and y coordinates of mouse
 shooter = () => {
 	c.beginPath()
 	c.fillStyle = "blue"
@@ -53,20 +80,10 @@ function Target(x, y) {
 		c.fill()
 	}
 
-
 	this.update = function () {
 		this.draw()
 	}
 }
-
-const greenTarget = new Target(300, 50)
-
-const blueTarget = new Target(600, 50)
-
-let targets = []
-targets.push(greenTarget)
-targets.push(blueTarget)
-
 
 
 // Bullets
@@ -85,37 +102,89 @@ function Bullet(x, y) {
 	// Moves bullet up towards top of screen
 	// Calls draw() function
 	this.update = function () {
+		this.draw()
 		this.y -= 21
 
-		if (distance(this.x + 10, this.y + 10, greenTarget.x + greenTarget.radius,
-			greenTarget.y + greenTarget.radius,) < 30) {
+		// for (let t = 0; t < targets.length; t++) {
+		// 	if (distance(this.x, this.y, targets[t].x,
+		// 	targets[t].y) < 50) {
 
-				greenTarget.color = "yellow"
-				score += 1
+		// 	targets.slice(t, 1)
+		// 	// targets.slice(t.x, 1)
+		// 	// targets.slice(t.y, 1)
 
-				console.log("hit")
-		}
+		// 	score += 1
 
+		// 	console.log(targets)
+		// 	console.log("hit")
+		// 	}
+		// }
 
-		if (distance(this.x + 10, this.y + 10, blueTarget.x + blueTarget.radius,
-			blueTarget.y + blueTarget.radius,) < 30) {
-
-				blueTarget.color = "yellow"
-				score += 1
-
-				console.log("hit")
-		}
-
-		this.draw()
 	}
 }
+// if (distance(this.x, this.y, greenTarget.x,
+// 	greenTarget.y) < 30) {
 
-let bullets = []
+// 		greenTarget.color = "yellow"
+// 		score += 1
 
+// 		console.log(targets)
+// 		console.log("hit")
+// }
+
+
+// if (distance(this.x, this.y, blueTarget.x,
+// 	blueTarget.y) < 30) {
+
+// 		blueTarget.color = "yellow"
+// 		score += 1
+// 		targets.pop()
+// 		console.log(targets)
+// 		console.log("hit")
+// }
+
+// Creates Targets
+makeTargets = () => {
+	for (let i = 0; i < 3; i++) {
+		let x = (Math.random() * innerWidth - 50) + 50
+		let y = (Math.random() * 100 + 50)
+
+		targets.push(new Target(x, y))
+	}
+}
+makeTargets()
+
+// Shoots Bullets
 addEventListener('click', event => {
 	const bullet = new Bullet(mouse.x, mouse.y)
 	bullets.push(bullet)
+
+
+	for (let t = 0; t < targets.length; t++) {
+		for (let b = 0; b < bullets.length; b++) {
+			// Creating new targets if length of targets
+				// array is less than zero
+			if (targets.length < 1) {
+					makeTargets()
+			}
+			// Collision detection between bullets and targets
+			if (distance(bullets[b].x, bullets[b].y, targets[t].x,
+				targets[t].y) < 100) {
+				// If collision, score increases by 1
+				score += 1
+				// If collision, remove hit target
+				targets.splice(t, 1)
+				console.log(targets)
+				console.log("hit")
+				console.log(targets.length)
+			}
+		}
+	}
 })
+
+
+console.log(targets)
+// console.log(bullets)
 
 
 
@@ -126,31 +195,26 @@ animate = () => {
 	// clears screen to prevent trailing
 	c.clearRect(0, 0, innerWidth, innerHeight)
 
+	// Circle at attached to mouse
+	// Shoots bullets on click of mouse
 	shooter()
 
+	// Draws "Score:"
+	scoreText()
+
+	// Draws score number
+	scoreNumber()
+
+	// Draws and animates bullet in bullets array
 	for (let i = 0; i < bullets.length; i++) {
 		bullets[i].update()
 	}
 
-
+	// Draws and animates target in targets array
 	for (let i = 0; i < targets.length; i++) {
 		targets[i].update()
 	}
-
-	c.beginPath()
-	c.font = "60pt Comic Sans MS"
-	c.fillStyle = "green"
-	c.fillText('Score:', 500, 500, 300)
-	c.fill()
-
-	c.beginPath()
-	c.font = "60pt Comic Sans MS"
-	c.fillStyle = "green"
-	c.fillText(score, 750, 500, 300)
-	c.fill()
-
-
-
 }
+
 
 animate()
